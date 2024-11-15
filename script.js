@@ -18,7 +18,8 @@ function startGame() {
                 x: circle.x,
                 y: circle.y,
                 time: circle.time,
-                radius: 50 // Define um tamanho padrão para o círculo
+                radius: 50, // Define um tamanho padrão para o círculo
+                clicked: false // Define se o círculo foi clicado
             }));
 
             // Registra o início do jogo e inicia o loop de animação
@@ -35,18 +36,14 @@ function gameLoop() {
     const currentTime = Date.now() - startTime;
     circles.forEach(circle => {
         const elapsed = currentTime - circle.time;
-        if (elapsed < 0) return; // Mostra o círculo apenas no tempo correto
-
-        // Desenha o círculo no canvas
-        ctx.beginPath();
-        ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
-        ctx.strokeStyle = "#00f";
-        ctx.lineWidth = 5;
-        ctx.stroke();
-
-        // Remove círculos que passaram do tempo
-        if (elapsed > 500) {
-            circles = circles.filter(c => c !== circle);
+        
+        // Mostra o círculo apenas se estiver na hora e não foi clicado ainda
+        if (elapsed >= 0 && !circle.clicked) {
+            ctx.beginPath();
+            ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = "#00f";
+            ctx.lineWidth = 5;
+            ctx.stroke();
         }
     });
 
@@ -65,6 +62,7 @@ canvas.addEventListener('click', (event) => {
         const dy = y - circle.y;
         if (Math.sqrt(dx * dx + dy * dy) < circle.radius) {
             console.log("Acertou!");
+            circle.clicked = true; // Marca o círculo como clicado para que desapareça
         }
     });
 });
