@@ -35,7 +35,7 @@ function resetGame() {
     if (isGameActive) {
         clearInterval(timerInterval); // Para o cronômetro
         const finalTime = (Date.now() - startTime) / 1000; // Calcula o tempo final em segundos
-        
+
         // Adiciona o tempo ao ranking
         ranking.push({ name: nickname, time: finalTime });
         updateRanking(); // Atualiza o ranking
@@ -48,6 +48,13 @@ function resetGame() {
     timerElement.textContent = '0.00s'; // Reseta o cronômetro na tela
 }
 
+// Atualiza o cronômetro
+function updateTimer() {
+    if (isGameActive) { 
+        const currentTime = (Date.now() - startTime) / 1000; // Calcula o tempo em segundos
+        timerElement.textContent = `${currentTime.toFixed(2)}s`; // Atualiza o texto do cronômetro
+    }
+}
 
 // Inicia o jogo
 function startGame() {
@@ -57,9 +64,12 @@ function startGame() {
     }
 
     messageElement.textContent = ''; // Limpa mensagens anteriores
+    timerElement.textContent = '0.00s'; // Reseta o cronômetro no início do jogo
     startTime = Date.now();          // Marca o início do jogo
     isGameActive = true;             // Marca o jogo como ativo
-    timerInterval = setInterval(updateTimer, 10); // Atualiza o cronômetro a cada 10ms
+
+    // Atualiza o cronômetro em intervalos regulares
+    timerInterval = setInterval(updateTimer, 10);
 }
 
 // Verifica se o mouse se moveu
