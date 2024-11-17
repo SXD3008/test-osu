@@ -1,20 +1,26 @@
-
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>osu! Clone</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Live Subscribers Comparison</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        canvas {
+            max-width: 600px;
+            margin: auto;
+        }
+    </style>
 </head>
 <body>
-    <div id="menu">
-        <h1>osu! Clone</h1>
-        <button onclick="startGame()">Começar Jogo</button>
-    </div>
-    <div id="game" style="display: none;">
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
-    </div>
+    <h1>Subscribers Comparison: Alanzoka vs PewDiePie</h1>
+    <canvas id="subscribersChart"></canvas>
+    <p>Atualizado a cada minuto.</p>
     <script src="script.js"></script>
 </body>
 </html>
