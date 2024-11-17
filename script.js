@@ -36,11 +36,15 @@ function updateTable() {
 }
 
 // Atualização automática
-setInterval(() => {
+function startLiveUpdates() {
     updateSubscribers(); // Atualiza os inscritos simulados
-    updateTable();       // Atualiza a tabela
-}, 60000); // A cada 60 segundos
+    updateTable();       // Atualiza a tabela visual
 
-// Atualização inicial
-updateSubscribers();
-updateTable();
+    setInterval(() => {
+        updateSubscribers(); // Atualiza os dados
+        updateTable();       // Atualiza a tabela na página
+    }, 1000); // Atualiza a cada 1 segundo
+}
+
+// Inicia as atualizações ao carregar a página
+startLiveUpdates();
