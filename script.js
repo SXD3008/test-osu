@@ -2,6 +2,7 @@
 const timerElement = document.getElementById('timer');
 const messageElement = document.getElementById('message');
 const rankingList = document.getElementById('ranking-list');
+const top5List = document.getElementById('top-5-list');
 
 // Variáveis de controle do jogo
 let startTime = 0;
@@ -21,7 +22,8 @@ function loadRanking() {
     const savedRanking = localStorage.getItem('ranking');
     if (savedRanking) {
         ranking = JSON.parse(savedRanking);
-        updateRanking(); // Atualiza o ranking na tela com os dados carregados
+        updateRanking(); // Atualiza o ranking na tela
+        updateTop5(); // Atualiza o Top 5
     }
 }
 
@@ -40,6 +42,20 @@ function updateRanking() {
     });
 }
 
+// Atualiza o Top 5 no DOM
+function updateTop5() {
+    top5List.innerHTML = ''; // Limpa o top 5 atual
+
+    ranking.slice(0, 5).forEach((player, index) => {
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `
+            <span>${index + 1}. ${player.name}</span>
+            <span>${player.time.toFixed(2)}s</span>
+        `;
+        top5List.appendChild(listItem);
+    });
+}
+
 // Reseta o jogo
 function resetGame() {
     if (isGameActive) {
@@ -47,6 +63,7 @@ function resetGame() {
         const finalTime = (Date.now() - startTime) / 1000; // Calcula o tempo final em segundos
         ranking.push({ name: nickname, time: finalTime }); // Adiciona o tempo ao ranking
         updateRanking(); // Atualiza o ranking na tela
+        updateTop5(); // Atualiza o Top 5
         saveRanking(); // Salva o ranking no localStorage
         messageElement.textContent = 'Oops! You moved the mouse!'; // Mensagem de erro
     }
@@ -80,28 +97,4 @@ function startGame() {
     timerInterval = setInterval(updateTimer, 10);
 }
 
-// Verifica se o mouse se moveu
-function checkMouseMovement(event) {
-    if (!isGameActive) return; // Ignora se o jogo não estiver ativo
-
-    const { x, y } = lastMousePosition; // Pega a última posição do mouse
-    if (event.clientX !== x || event.clientY !== y) {
-        resetGame(); // Reseta o jogo se o mouse se mover
-    }
-
-    // Atualiza a posição do mouse
-    lastMousePosition.x = event.clientX;
-    lastMousePosition.y = event.clientY;
-}
-
-// Carrega o ranking do localStorage ao iniciar a página
-loadRanking();
-
-// Adiciona eventos ao teclado e mouse
-document.addEventListener('keydown', (event) => {
-    if (event.code === 'Space' && !isGameActive) { // Inicia o jogo ao pressionar espaço
-        startGame();
-    }
-});
-
-document.addEventListener('mousemove', checkMouseMovement); // Verifica movimentos do mouse
+// Ver
