@@ -2,7 +2,6 @@
 const timerElement = document.getElementById('timer');
 const messageElement = document.getElementById('message');
 const rankingList = document.getElementById('ranking-list');
-const top5List = document.getElementById('top-5-list');
 
 // Variáveis de controle do jogo
 let startTime = 0;
@@ -12,26 +11,15 @@ let lastMousePosition = { x: 0, y: 0 };
 let nickname = '';
 let ranking = [];
 
-// Função para atualizar o ranking no localStorage
-function saveRanking() {
-    localStorage.setItem('ranking', JSON.stringify(ranking));
-}
-
-// Função para carregar o ranking do localStorage
-function loadRanking() {
-    const savedRanking = localStorage.getItem('ranking');
-    if (savedRanking) {
-        ranking = JSON.parse(savedRanking);
-        updateRanking(); // Atualiza o ranking na tela
-        updateTop5(); // Atualiza o Top 5
-    }
-}
-
 // Atualiza o ranking no DOM
 function updateRanking() {
-    ranking.sort((a, b) => b.time - a.time); // Ordena o ranking por tempo decrescente
-    rankingList.innerHTML = ''; // Limpa o ranking atual
+    // Ordena o ranking pelo maior tempo
+    ranking.sort((a, b) => b.time - a.time);
 
+    // Limpa o ranking atual na tela
+    rankingList.innerHTML = '';
+
+    // Adiciona os top 10 ao ranking
     ranking.slice(0, 10).forEach((player, index) => {
         const listItem = document.createElement('li');
         listItem.innerHTML = `
@@ -42,30 +30,17 @@ function updateRanking() {
     });
 }
 
-// Atualiza o Top 5 no DOM
-function updateTop5() {
-    top5List.innerHTML = ''; // Limpa o top 5 atual
-
-    ranking.slice(0, 5).forEach((player, index) => {
-        const listItem = document.createElement('li');
-        listItem.innerHTML = `
-            <span>${index + 1}. ${player.name}</span>
-            <span>${player.time.toFixed(2)}s</span>
-        `;
-        top5List.appendChild(listItem);
-    });
-}
-
 // Reseta o jogo
 function resetGame() {
     if (isGameActive) {
         clearInterval(timerInterval); // Para o cronômetro
         const finalTime = (Date.now() - startTime) / 1000; // Calcula o tempo final em segundos
-        ranking.push({ name: nickname, time: finalTime }); // Adiciona o tempo ao ranking
-        updateRanking(); // Atualiza o ranking na tela
-        updateTop5(); // Atualiza o Top 5
-        saveRanking(); // Salva o ranking no localStorage
-        messageElement.textContent = 'Oops! You moved the mouse!'; // Mensagem de erro
+
+        // Adiciona o tempo ao ranking
+        ranking.push({ name: nickname, time: finalTime });
+        updateRanking(); // Atualiza o ranking
+
+        messageElement.textContent = 'Oops! You moved the mouse!';
     }
 
     startTime = 0;               // Reseta o tempo
@@ -97,4 +72,25 @@ function startGame() {
     timerInterval = setInterval(updateTimer, 10);
 }
 
-// Ver
+// Verifica se o mouse se moveu
+function checkMouseMovement(event) {
+    if (!isGameActive) return; // Ignora se o jogo não estiver ativo
+
+    const { x, y } = lastMousePosition; // Pega a última posição do mouse
+    if (event.clientX !== x || event.clientY !== y) {
+        resetGame(); // Reseta o jogo se o mouse se mover
+    }
+
+    // Atualiza a posição do mouse
+    lastMousePosition.x = event.clientX;
+    lastMousePosition.y = event.clientY;
+}
+
+// Adiciona eventos ao teclado e mouse
+document.addEventListener('keydown', (event) => {
+    if (event.code === 'Space' && !isGameActive) { // Inicia o jogo ao pressionar espaço
+        startGame();
+    }
+});
+
+document.addEventListener('mousemove', checkMouseMovement); // Verifica movimentos do mouse
