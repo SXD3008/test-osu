@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Não se mova!</title>
+    <title>Stay Still Game</title>
     <link href="https://fonts.googleapis.com/css2?family=Feather&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Feather', Arial, sans-serif; /* Define Feather como a fonte principal */
-            text-align: center;
+            font-family: 'Feather', Arial, sans-serif;
             background-color: #1e1e2f; /* Fundo escuro */
             color: #ffffff; /* Texto claro */
             margin: 0;
             padding: 0;
+            display: flex;
         }
         #game-container {
+            text-align: center;
+            width: 70%; /* Ocupa 70% da largura da tela */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -23,7 +25,7 @@
         }
         h1 {
             color: #f39c12; /* Título em laranja */
-            font-weight: bold; /* Força o estilo "bold" */
+            font-weight: bold;
         }
         p {
             margin: 10px 0;
@@ -31,7 +33,7 @@
         }
         #timer {
             font-size: 3em;
-            font-weight: bold; /* Estilo bold para destaque */
+            font-weight: bold;
             color: #2ecc71; /* Cronômetro verde */
         }
         #message {
@@ -39,13 +41,44 @@
             color: #e74c3c; /* Mensagem de erro em vermelho */
             margin-top: 10px;
         }
+        #ranking {
+            width: 30%; /* Ocupa 30% da largura da tela */
+            background-color: #2c2c3b; /* Fundo escuro do ranking */
+            padding: 20px;
+            overflow-y: auto; /* Permite rolagem caso o ranking cresça */
+            box-shadow: -5px 0 10px rgba(0, 0, 0, 0.5); /* Sombra lateral */
+        }
+        #ranking h2 {
+            color: #f39c12; /* Título em laranja */
+            font-size: 1.5em;
+        }
+        #ranking ul {
+            list-style: none;
+            padding: 0;
+        }
+        #ranking li {
+            background-color: #3a3a4a; /* Fundo de cada item do ranking */
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            color: #ffffff; /* Texto branco */
+            font-size: 1em;
+            display: flex;
+            justify-content: space-between;
+        }
     </style>
 </head>
 <body>
+    <div id="ranking">
+        <h2>Top Players</h2>
+        <ul id="ranking-list">
+            <!-- Lista do ranking será atualizada aqui -->
+        </ul>
+    </div>
     <div id="game-container">
-        <h1>Não se Mova!</h1>
-        <p>Pressione <strong>Space</strong> para iniciar o jogo</p>
-        <p>não mexa seu mouse!</p>
+        <h1>Stay Still Game</h1>
+        <p>Press <strong>Space</strong> to start the game.</p>
+        <p>Don't move the mouse!</p>
         <div id="timer">0.00s</div>
         <div id="message"></div>
     </div>
