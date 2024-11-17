@@ -1,68 +1,52 @@
-let canvas, ctx, circles = [], startTime;
+// Substitua pelos IDs dos canais
+const ALANZOKA_CHANNEL_ID = 'UCq8wZ6fI7T3CUxJ2sLtzL-Q'; // Alanzoka
+const PEWDIEPIE_CHANNEL_ID = 'UC-lHJZR3Gqxm24_Vd_AJ5Yw'; // PewDiePie
+const API_KEY = 'AIzaSyAAuC1FAIonv_6dyeXNTzLW9iBNgXWQfQ4';
 
-function startGame() {
-    // Oculta o menu e exibe o canvas do jogo
-    document.getElementById("menu").style.display = "none";
-    document.getElementById("game").style.display = "block";
-    
-    // Configura o canvas
-    canvas = document.getElementById("gameCanvas");
-    ctx = canvas.getContext("2d");
-    
-    // Carrega o mapa de ritmo
-    fetch('assets/maps/map.json')
-        .then(response => response.json())
-        .then(data => {
-            // Armazena os círculos do mapa no array `circles`
-            circles = data.circles.map(circle => ({
-                x: circle.x,
-                y: circle.y,
-                time: circle.time,
-                radius: 50, // Define um tamanho padrão para o círculo
-                clicked: false // Define se o círculo foi clicado
-            }));
-
-            // Registra o início do jogo e inicia o loop de animação
-            startTime = Date.now();
-            requestAnimationFrame(gameLoop);
-        })
-        .catch(error => console.error('Erro ao carregar o mapa:', error));
+// Função para buscar o número de inscritos
+async function fetchSubscriberCount(channelId) {
+    try {
+        const response = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${channelId}&key=${API_KEY}`);
+        const data = await response.json();
+        return parseInt(data.items[0].statistics.subscriberCount);
+    } catch (error) {
+        console.error('Erro ao buscar dados:', error);
+        return 0; // Valor padrão em caso de erro
+    }
 }
 
-function gameLoop() {
-    // Limpa o canvas para o próximo frame
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    const currentTime = Date.now() - startTime;
-    circles.forEach(circle => {
-        const elapsed = currentTime - circle.time;
-        
-        // Mostra o círculo apenas se estiver na hora e não foi clicado ainda
-        if (elapsed >= 0 && !circle.clicked) {
-            ctx.beginPath();
-            ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
-            ctx.strokeStyle = "#00f";
-            ctx.lineWidth = 5;
-            ctx.stroke();
-        }
-    });
-
-    // Continua o loop de animação
-    requestAnimationFrame(gameLoop);
+// Atualizar gráfico
+async function updateChart(chart) {
+    const alanzokaSubscribers = await fetchSubscriberCount(ALANZOKA_CHANNEL_ID);
+    const pewdiepieSubscribers = await fetchSubscriberCount(PEWDIEPIE_CHANNEL_ID);
+    chart.data.datasets[0].data = [alanzokaSubscribers, pewdiepieSubscribers];
+    chart.update();
 }
 
-// Detecta cliques no canvas
-canvas.addEventListener('click', (event) => {
-    const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    
-    circles.forEach(circle => {
-        const dx = x - circle.x;
-        const dy = y - circle.y;
-        if (Math.sqrt(dx * dx + dy * dy) < circle.radius) {
-            console.log("Acertou!");
-            circle.clicked = true; // Marca o círculo como clicado para que desapareça
+// Configurar o gráfico
+const ctx = document.getElementById('subscribersChart').getContext('2d');
+const subscribersChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Alanzoka', 'PewDiePie'],
+        datasets: [{
+            label: 'Subscribers',
+            data: [0, 0],
+            backgroundColor: ['#3498db', '#f39c12']
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
         }
-    });
+    }
 });
+
+// Atualização automática
+setInterval(() => updateChart(subscribersChart), 60000); // Atualiza a cada minuto
+
+// Atualização inicial
+updateChart(subscribersChart);
