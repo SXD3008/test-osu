@@ -11,15 +11,25 @@ let lastMousePosition = { x: 0, y: 0 };
 let nickname = '';
 let ranking = [];
 
+// Função para atualizar o ranking no localStorage
+function saveRanking() {
+    localStorage.setItem('ranking', JSON.stringify(ranking));
+}
+
+// Função para carregar o ranking do localStorage
+function loadRanking() {
+    const savedRanking = localStorage.getItem('ranking');
+    if (savedRanking) {
+        ranking = JSON.parse(savedRanking);
+        updateRanking(); // Atualiza o ranking na tela com os dados carregados
+    }
+}
+
 // Atualiza o ranking no DOM
 function updateRanking() {
-    // Ordena o ranking pelo maior tempo
-    ranking.sort((a, b) => b.time - a.time);
+    ranking.sort((a, b) => b.time - a.time); // Ordena o ranking por tempo decrescente
+    rankingList.innerHTML = ''; // Limpa o ranking atual
 
-    // Limpa o ranking atual na tela
-    rankingList.innerHTML = '';
-
-    // Adiciona os top 10 ao ranking
     ranking.slice(0, 10).forEach((player, index) => {
         const listItem = document.createElement('li');
         listItem.innerHTML = `
@@ -35,12 +45,10 @@ function resetGame() {
     if (isGameActive) {
         clearInterval(timerInterval); // Para o cronômetro
         const finalTime = (Date.now() - startTime) / 1000; // Calcula o tempo final em segundos
-
-        // Adiciona o tempo ao ranking
-        ranking.push({ name: nickname, time: finalTime });
-        updateRanking(); // Atualiza o ranking
-
-        messageElement.textContent = 'Oops! You moved the mouse!';
+        ranking.push({ name: nickname, time: finalTime }); // Adiciona o tempo ao ranking
+        updateRanking(); // Atualiza o ranking na tela
+        saveRanking(); // Salva o ranking no localStorage
+        messageElement.textContent = 'Oops! You moved the mouse!'; // Mensagem de erro
     }
 
     startTime = 0;               // Reseta o tempo
@@ -85,6 +93,9 @@ function checkMouseMovement(event) {
     lastMousePosition.x = event.clientX;
     lastMousePosition.y = event.clientY;
 }
+
+// Carrega o ranking do localStorage ao iniciar a página
+loadRanking();
 
 // Adiciona eventos ao teclado e mouse
 document.addEventListener('keydown', (event) => {
